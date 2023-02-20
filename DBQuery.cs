@@ -67,7 +67,6 @@ namespace DBQuery
                         indexTables.serialize() +
                         "', N'', 0)", connection);
 
-
                     break;
 
                 case "postgresql":
@@ -83,13 +82,13 @@ namespace DBQuery
             }
         }
 
-        public static string execute(string query, SqlParameter[])
-        {
+        //public static string execute(string query, SqlParameter[])
+        //{
 
-            getQueryConfiguration();
+        //    getQueryConfiguration();
 
-            return null;
-        }
+        //    return null;
+        //}
     
     }
 }
