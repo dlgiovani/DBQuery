@@ -13,18 +13,18 @@ namespace testeApp
 
             Console.WriteLine("I'm alive");
 
-            DBQuery.server          = "localhost";
-            DBQuery.user            = "root";
-            DBQuery.password        = "makina";
-            DBQuery.port            = 3306;
-            DBQuery.connectionType  = "mysql";
-            DBQuery.database        = "vinicola_exemplo";
+            DBQuery.server          = "10.1.11.15";
+            DBQuery.user            = "developer";
+            DBQuery.password        = "developer@2020";
+            //DBQuery.port            = 3306;
+            DBQuery.connectionType  = "sqlserver";
+            DBQuery.database        = "Discovery";
 
-            DBQuery.tablesToIndex = new string[] {  "vinho" };
+            DBQuery.tablesToIndex = new string[] { "tCli" };
 
-            string testeHihi = DBQuery.Teste();
+            //string testeHihi = DBQuery.Teste();
 
-            Console.WriteLine(testeHihi);
+            //Console.WriteLine(testeHihi);
             Console.ReadLine();
         }
     }

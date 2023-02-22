@@ -36,16 +36,20 @@ public class DBQuery
         string output = " ";
         for (int i = 0; i < tablesToIndex.Length; i++)
         {
-            output += "'" + tablesToIndex[i] + "'" + (i == tablesToIndex.Length - 1 ? " " : ", ");
-        }
-        return output;
+                if (connectionType == "mysql")
+                    output += "'" + tablesToIndex[i] + "'" + (i == tablesToIndex.Length - 1 ? " " : ", ");
+                if (connectionType == "sqlserver")
+                    output += tablesToIndex[i] + (i == tablesToIndex.Length - 1 ? " " : ", ");
+
+            }
+            return output;
     }
 
 }
 
 private static string connectionString;
 
-private static string getQueryConfiguration()
+private static DataTable getQueryConfiguration()
 {
     IndexTables indexTables = new IndexTables();
 
@@ -61,12 +65,14 @@ private static string getQueryConfiguration()
 
             SqlConnection sqlserverConnection = new SqlConnection(connectionString);
             SqlCommand sqlserverCommand = new SqlCommand("select name, " +
-                "system_type_name, " +
-                "is_nullable " +
+                "system_type_name " +
                 "from sys.dm_exec_describe_first_result_set " +
                 "(N'select * from " +
                 indexTables.serialize() +
                 "', N'', 0)", sqlserverConnection);
+
+                SqlDataAdapter sqlserverAdapter = new SqlDataAdapter(sqlserverCommand);
+                sqlserverAdapter.Fill(schemaTable);
 
             break;
 
@@ -81,8 +87,7 @@ private static string getQueryConfiguration()
 
                 MySqlConnection mysqlConnection = new MySqlConnection(connectionString);
                 MySqlCommand mysqlCommand = new MySqlCommand("SELECT COLUMN_NAME, " +
-                    "DATA_TYPE, " +
-                    "IS_NULLABLE " +
+                    "DATA_TYPE " +
                     "from INFORMATION_SCHEMA.columns where TABLE_NAME IN (" +
                     indexTables.serialize() + ")", mysqlConnection);
 
@@ -94,23 +99,63 @@ private static string getQueryConfiguration()
 
     }
 
-        string jsonSchema = JsonConvert.SerializeObject(schemaTable);
-        return jsonSchema;
+        //string jsonSchema = JsonConvert.SerializeObject(schemaTable);
+        return schemaTable;
         
 }
 
-//public static string execute(string query, SqlParameter[])
-//{
-
-//    getQueryConfiguration();
-
-//    return null;
-//}
-
-public static string Teste()
+    private string mapDbType(string dbType)
     {
-        string testeTable = getQueryConfiguration();
-        return testeTable;
+
+        SqlDbType returnType = new SqlDbType();
+        string sizeOfType = dbType.Split('(', ')')[1];
+        if (sizeOfType.Contains("."))
+        {
+            int size = (int) Convert.ToInt64(sizeOfType);
+        }
+
+        //switch
+        //    {
+        //        case (dbType)
+        //    }
+
+
+        return null;
+    }
+
+    private int mapDbSize(string dbType)
+    {
+
+        string sizeOfType = dbType.Split('(', ')')[1];
+        int size = (int)Convert.ToInt64(sizeOfType);
+
+        return size;
+    }
+
+    public static string ExecuteQuery(string query, SqlParameter[] parameters)
+    {
+        DataTable dataTable = getQueryConfiguration();
+
+        Console.WriteLine(dataTable.Columns[0]);
+        Console.WriteLine(dataTable.Columns[1]);
+
+        foreach (SqlParameter parameter in parameters)
+        {
+            foreach (DataRow row in dataTable.Rows)
+            {
+                for (int i = 0; i < dataTable.Columns.Count; i++)
+                {
+                    if (parameter.SqlValue == row[0])
+                    {
+                        //parameter.SqlDbType = mapDbType(row[1]);
+                        //string parm = row[1];
+                        //parameter.Size      = mapDbSize((string) row[1]);
+                    }
+                }
+            }
+        }
+
+        return "a";
     }
 
 }
